@@ -1243,6 +1243,31 @@
     display: flex;
     justify-content: center;
   }
+  .special-form-badges {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 22px;
+  }
+  .special-form-badge {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: 3px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--type-color) 78%, #ffffff 22%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  .special-form-badge img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
+  }
   .settings-header {
     display: flex;
     align-items: center;
@@ -7289,6 +7314,19 @@ function renderMinimalTypeBadges(types) {
   return `<div class="minimal-type-badges"><span class="type-badge dual-type" style="--type-color-left:${first.color}; --type-color-right:${second.color}"><img src="${first.icon}" alt="${types[0]}" title="${types[0]}"><img src="${second.icon}" alt="${types[1]}" title="${types[1]}"></span></div>`;
 }
 
+function renderPopupTypeBadges(types) {
+  if (!types || !types.length) return '';
+  const badges = types
+    .map(type => {
+      const meta = TYPE_META[type];
+      if (!meta) return '';
+      return `<span class="special-form-badge" style="--type-color:${meta.color}"><img src="${meta.icon}" alt="${type}" title="${type}"></span>`;
+    })
+    .filter(Boolean)
+    .join('');
+  return badges ? `<div class="special-form-badges">${badges}</div>` : '';
+}
+
 function getNameplateGradient(types) {
   if (!types || !types.length) return `linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.14))`;
   if (types.length === 1) {
@@ -7403,7 +7441,7 @@ function getAvailableForms(entryOrId) {
   const splitFamily = entry.splitFamily || '';
   const baseSuffix = BASE_FORM_SUFFIX_BY_ID[id];
   const rawForms = (FORMS_BY_ID[id] || []).filter(form => form.suffix !== baseSuffix).map(form => ({
-    suffix: form.suffix || '',
+    suffix: ((id === 493 || id === 773) && form.suffix === 'normal') ? '' : (form.suffix || ''),
     label: form.label || 'Normal',
     types: form.types || TYPES_BY_ID[id] || [],
     image: form.image
@@ -7413,7 +7451,7 @@ function getAvailableForms(entryOrId) {
     const base = { suffix: '', label: 'Normal', types: TYPES_BY_ID[id] || [] };
     const extras = rawForms.filter(form => !getRegionalFormFamily(form));
     if (id === 666 && extras.length) return extras;
-    return [base, ...extras];
+    return extras.some(form => form.suffix === '') ? extras : [base, ...extras];
   }
 
   const familyForms = rawForms.filter(form => getRegionalFormFamily(form) === splitFamily);
@@ -8082,7 +8120,7 @@ function openSpecialFormPicker(entry, event) {
         <img class="special-form-sprite" src="${getDisplaySpriteUrl(id, form, isCardToggleOn)}" alt="${form.label}" loading="lazy">
       </div>
       <div class="special-form-label">${form.label}</div>
-      <div class="special-form-type">${renderTypeBadges(form.types && form.types.length ? form.types : (TYPES_BY_ID[id] || []))}</div>
+      <div class="special-form-type">${renderPopupTypeBadges(form.types && form.types.length ? form.types : (TYPES_BY_ID[id] || []))}</div>
     `;
     button.addEventListener('click', (clickEvent) => {
       clickEvent.stopPropagation();
