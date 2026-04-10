@@ -4405,25 +4405,46 @@ function getDisplaySpriteUrl(id, formInfo, shiny = false) {
   return baseUrl;
 }
 
+const buildTypeIcon = markup => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">${markup}</svg>`)}`;
+const TYPE_ICON_SRC = {
+  Normal: buildTypeIcon(`<circle cx="24" cy="24" r="10"/>`),
+  Fire: buildTypeIcon(`<path d="M24 9c4 5 7 9 7 14 0 4.7-3 8.6-7 10-4-1.4-7-5.3-7-10 0-5 3-9 7-14Z" fill="#ffffff" stroke="none"/><path d="M24 16c2.4 3 4 5.2 4 7.8 0 2.5-1.7 4.6-4 5.7-2.3-1.1-4-3.2-4-5.7 0-2.2 1.2-4.2 4-7.8Z"/>`),
+  Fighting: buildTypeIcon(`<rect x="14" y="13" width="5" height="11" rx="1.2" fill="#ffffff" stroke="none"/><rect x="20" y="11" width="5" height="13" rx="1.2" fill="#ffffff" stroke="none"/><rect x="26" y="13" width="5" height="11" rx="1.2" fill="#ffffff" stroke="none"/><path d="M14 25h18v7c0 2.2-1.8 4-4 4H18c-2.2 0-4-1.8-4-4z" fill="#ffffff" stroke="none"/>`),
+  Water: buildTypeIcon(`<path d="M24 9c5.5 7.4 8 11.7 8 16a8 8 0 1 1-16 0c0-4.3 2.5-8.6 8-16Z" fill="#ffffff" stroke="none"/>`),
+  Flying: buildTypeIcon(`<path d="M13 29c7-1 12-5 16-12 0 6-2 11-6 16"/><path d="M20 30c7-.8 12-4.5 16-10"/><path d="M16 35c5-.4 10-2.4 15-6"/>`),
+  Grass: buildTypeIcon(`<path d="M13 34c1-7 4-12 9-16-1 8-3 13-6 16"/><path d="M20 34c0-8 3-14 7-18 0 9-1 15-4 18"/><path d="M27 34c0-10 3-17 8-22 1 10-1 18-5 22"/>`),
+  Poison: buildTypeIcon(`<circle cx="18" cy="18" r="4" fill="#ffffff" stroke="none"/><circle cx="30" cy="18" r="4" fill="#ffffff" stroke="none"/><circle cx="24" cy="30" r="6" fill="#ffffff" stroke="none"/>`),
+  Electric: buildTypeIcon(`<path d="M26 8 14 26h8l-2 14 14-20h-8l2-12Z" fill="#ffffff" stroke="none"/>`),
+  Ground: buildTypeIcon(`<circle cx="18" cy="14" r="2" fill="#ffffff" stroke="none"/><circle cx="24" cy="10" r="2" fill="#ffffff" stroke="none"/><circle cx="30" cy="14" r="2" fill="#ffffff" stroke="none"/><path d="M12 23h24"/><path d="M15 29h18"/><path d="M18 35h12"/>`),
+  Psychic: buildTypeIcon(`<path d="M24 10 27.5 18.5 36 22 27.5 25.5 24 34 20.5 25.5 12 22 20.5 18.5Z" fill="#ffffff" stroke="none"/>`),
+  Rock: buildTypeIcon(`<path d="M17 14h14l7 10-7 10H17l-7-10Z"/><path d="M24 14v20"/><path d="M17 14l7 10 7-10"/>`),
+  Ice: buildTypeIcon(`<path d="M24 10v28"/><path d="M12 17l24 14"/><path d="M36 17 12 31"/><path d="M24 10l-3 4"/><path d="M24 10l3 4"/><path d="M24 38l-3-4"/><path d="M24 38l3-4"/><path d="M12 17l5 1"/><path d="M12 31l5-1"/><path d="M36 17l-5 1"/><path d="M36 31l-5-1"/>`),
+  Bug: buildTypeIcon(`<circle cx="24" cy="18" r="4.8"/><path d="M24 23v11"/><path d="M18 27l6-4 6 4"/><path d="M18 17l-4-4"/><path d="M30 17l4-4"/><path d="M17 26l-5 2"/><path d="M31 26l5 2"/>`),
+  Dragon: buildTypeIcon(`<path d="M21 36c7-2.5 12-9.1 11-18.2-2.4 2.1-5.2 3.1-8.4 3.2 1.2-3.6.5-7-2.6-10.5-3.6 5.1-5 10.2-4.4 15.2.5 4.4 2 8 4.4 10.3Z" fill="#ffffff" stroke="none"/>`),
+  Ghost: buildTypeIcon(`<path d="M24 12c-6.6 0-12 5.4-12 12v10l4-3 4 3 4-3 4 3 4-3 4 3V24c0-6.6-5.4-12-12-12Z" fill="#ffffff" stroke="none"/><circle cx="20" cy="22" r="2" fill="#2d2d2d" stroke="none"/><circle cx="28" cy="22" r="2" fill="#2d2d2d" stroke="none"/>`),
+  Dark: buildTypeIcon(`<path d="M31 12.5c-2.3-.8-4.9-.8-7.4 0-6 2-9.2 8.4-7.2 14.4 1.9 5.9 8.2 9.1 14.1 7.2 2.2-.7 4.1-2 5.5-3.7-1.8.7-3.8.7-5.8.1-6-2-9.2-8.4-7.2-14.4.9-2.7 2.7-4.8 5-6.2 1-.6 2-.9 3-1.2Z" fill="#ffffff" stroke="none"/>`),
+  Steel: buildTypeIcon(`<path d="M24 12 36 19v10L24 36 12 29V19Z"/><path d="M24 12v24"/><path d="M12 19l12 7 12-7"/>`),
+  Fairy: buildTypeIcon(`<circle cx="19" cy="18" r="5" fill="#ffffff" stroke="none"/><circle cx="29" cy="18" r="5" fill="#ffffff" stroke="none"/><circle cx="19" cy="28" r="4.5" fill="#ffffff" stroke="none"/><circle cx="29" cy="28" r="4.5" fill="#ffffff" stroke="none"/><rect x="23" y="15.5" width="2" height="17" rx="1" fill="#ffffff" stroke="none"/>`)
+};
 const TYPE_META = {
-  Normal:   { color: '#9FA19F', icon: 'https://archives.bulbagarden.net/media/upload/thumb/a/ae/Normal_icon.png/60px-Normal_icon.png' },
-  Fire:     { color: '#FF8000', icon: 'https://archives.bulbagarden.net/media/upload/thumb/5/5e/Fire_icon.png/60px-Fire_icon.png' },
-  Fighting: { color: '#E62829', icon: 'https://archives.bulbagarden.net/media/upload/thumb/7/7d/Fighting_icon.png/60px-Fighting_icon.png' },
-  Water:    { color: '#2980EF', icon: 'https://archives.bulbagarden.net/media/upload/thumb/7/7f/Water_icon.png/60px-Water_icon.png' },
-  Flying:   { color: '#81B9EF', icon: 'https://archives.bulbagarden.net/media/upload/thumb/f/f0/Flying_icon.png/60px-Flying_icon.png' },
-  Grass:    { color: '#3FA129', icon: 'https://archives.bulbagarden.net/media/upload/thumb/c/cb/Grass_icon.png/60px-Grass_icon.png' },
-  Poison:   { color: '#9141CB', icon: 'https://archives.bulbagarden.net/media/upload/thumb/8/84/Poison_icon.png/60px-Poison_icon.png' },
-  Electric: { color: '#FAC000', icon: 'https://archives.bulbagarden.net/media/upload/thumb/a/af/Electric_icon.png/60px-Electric_icon.png' },
-  Ground:   { color: '#C28A56', icon: 'https://archives.bulbagarden.net/media/upload/thumb/5/58/Ground_icon.png/60px-Ground_icon.png' },
-  Psychic:  { color: '#EF4179', icon: 'https://archives.bulbagarden.net/media/upload/thumb/a/a6/Psychic_icon.png/60px-Psychic_icon.png' },
-  Rock:     { color: '#915121', icon: 'https://archives.bulbagarden.net/media/upload/thumb/f/ff/Rock_icon.png/60px-Rock_icon.png' },
-  Ice:      { color: '#3DCEF3', icon: 'https://archives.bulbagarden.net/media/upload/thumb/8/83/Ice_icon.png/60px-Ice_icon.png' },
-  Bug:      { color: '#91A119', icon: 'https://archives.bulbagarden.net/media/upload/thumb/7/79/Bug_icon.png/60px-Bug_icon.png' },
-  Dragon:   { color: '#5060E1', icon: 'https://archives.bulbagarden.net/media/upload/thumb/9/91/Dragon_icon.png/60px-Dragon_icon.png' },
-  Ghost:    { color: '#704170', icon: 'https://archives.bulbagarden.net/media/upload/thumb/8/82/Ghost_icon.png/60px-Ghost_icon.png' },
-  Dark:     { color: '#624D4E', icon: 'https://archives.bulbagarden.net/media/upload/thumb/3/33/Dark_icon.png/60px-Dark_icon.png' },
-  Steel:    { color: '#5A5F69', icon: 'https://archives.bulbagarden.net/media/upload/thumb/b/b8/Steel_icon.png/60px-Steel_icon.png' },
-  Fairy:    { color: '#EF70EF', icon: 'https://archives.bulbagarden.net/media/upload/thumb/5/5a/Fairy_icon.png/60px-Fairy_icon.png' }
+  Normal:   { color: '#9FA19F', icon: 'assets/type-icons/normal.png' },
+  Fire:     { color: '#FF8000', icon: 'assets/type-icons/fire.png' },
+  Fighting: { color: '#E62829', icon: 'assets/type-icons/fighting.png' },
+  Water:    { color: '#2980EF', icon: 'assets/type-icons/water.png' },
+  Flying:   { color: '#81B9EF', icon: 'assets/type-icons/flying.png' },
+  Grass:    { color: '#3FA129', icon: 'assets/type-icons/grass.png' },
+  Poison:   { color: '#9141CB', icon: 'assets/type-icons/poison.png' },
+  Electric: { color: '#FAC000', icon: 'assets/type-icons/electric.png' },
+  Ground:   { color: '#C28A56', icon: 'assets/type-icons/ground.png' },
+  Psychic:  { color: '#EF4179', icon: 'assets/type-icons/psychic.png' },
+  Rock:     { color: '#915121', icon: 'assets/type-icons/rock.png' },
+  Ice:      { color: '#3DCEF3', icon: 'assets/type-icons/ice.png' },
+  Bug:      { color: '#91A119', icon: 'assets/type-icons/bug.png' },
+  Dragon:   { color: '#5060E1', icon: 'assets/type-icons/dragon.png' },
+  Ghost:    { color: '#704170', icon: 'assets/type-icons/ghost.png' },
+  Dark:     { color: '#624D4E', icon: 'assets/type-icons/dark.png' },
+  Steel:    { color: '#5A5F69', icon: 'assets/type-icons/steel.png' },
+  Fairy:    { color: '#EF70EF', icon: 'assets/type-icons/fairy.png' }
 };
 const TYPES_BY_ID = {
   1: ['Grass', 'Poison'],
@@ -9730,8 +9751,6 @@ changeDexMode(selectedDex);
 </script>
 </body>
 </html>
-
-
 
 
 
