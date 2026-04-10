@@ -945,7 +945,8 @@
       width: 20px;
       height: 17px;
     }
-    .poke-rank {
+    .poke-rank,
+    .card-back-arrow {
       top: 8px;
       left: 7px;
       font-size: 0.65rem;
@@ -993,7 +994,7 @@
       border-width: 1px;
     }
   }
-  @media (max-width: 1850px) {
+  @media (max-width: 2000px) {
     :root { --page-side-pad: 22px; }
     .controls-main,
     .controls-right {
@@ -1082,7 +1083,8 @@
       width: 24px;
       height: 21px;
     }
-    .poke-rank {
+    .poke-rank,
+    .card-back-arrow {
       top: 9px;
       left: 9px;
       font-size: 0.6rem;
@@ -1116,6 +1118,47 @@
       margin-top: 9px;
       padding: 3px 7px;
       font-size: 0.58rem;
+    }
+    .card-back-panel {
+      padding: 4px 1px 2px;
+      gap: 2px;
+    }
+    .card-back-chart {
+      flex: 0 0 48%;
+      max-height: 74px;
+      margin-top: 0;
+    }
+    .card-back-stat-svg {
+      width: 80%;
+      height: 80%;
+      margin-top: 2px;
+    }
+    .card-back-radar-label {
+      font-size: 11px;
+    }
+    .card-back-radar-value {
+      font-size: 13px;
+    }
+    .card-back-section-title {
+      padding: 0 6px 0;
+      font-size: 0.48rem;
+    }
+    .card-back-ability-list {
+      gap: 0;
+    }
+    .card-back-ability-item,
+    .card-back-ability-empty {
+      min-height: 14px;
+      padding: 0 5px;
+    }
+    .card-back-ability-name {
+      font-size: 0.5rem;
+      line-height: 1;
+    }
+    .card-back-ability-slot {
+      min-width: 18px;
+      height: 12px;
+      font-size: 0.36rem;
     }
     .card-toggle-btn {
       right: 7px;
@@ -1500,9 +1543,10 @@
     align-items: center;
     justify-content: center;
     padding: 0 var(--page-side-pad) 20px;
+    overflow: visible;
   }
   .card {
-    background: var(--card-border-gradient);
+    background: transparent;
     border: 0;
     border-radius: 16px;
     padding: 16px 9px 15px;
@@ -1510,18 +1554,297 @@
     box-sizing: border-box;
     height: 246px;
     cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition: top 0.12s ease, box-shadow 0.12s ease;
     position: relative; user-select: none;
-    overflow: hidden;
-    contain: layout paint style;
-    content-visibility: auto;
-    contain-intrinsic-size: 246px 170px;
+    top: 0;
+    overflow: visible;
+    contain: layout style;
+    isolation: isolate;
+    z-index: 0;
     --card-border-size: 4px;
     --card-radius: 16px;
     --card-border-gradient: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.14));
     --card-inner-bg: var(--uncaught-card-bg);
+    perspective: 1200px;
+  }
+  .card.is-flipped,
+  .card:hover {
+    z-index: 40;
   }
   .card > * { position: relative; z-index: 2; }
+  .card-flip-shell {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+    z-index: 1;
+  }
+  .card:not(.is-flipped) .card-flip-shell {
+    transform: rotateY(0deg);
+  }
+  .card.is-flipped .card-flip-shell {
+    transform: rotateY(180deg);
+  }
+  .card-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: inherit;
+    border-radius: var(--card-radius);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    outline: 1px solid transparent;
+    overflow: hidden;
+  }
+  .card-face > * {
+    position: relative;
+    z-index: 2;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .card-face > .card-surface,
+  .card-face > .card-back-surface {
+    z-index: 0;
+  }
+  .card-front {
+    transform: rotateY(0deg) translateZ(0.1px);
+    pointer-events: auto;
+  }
+  .card-back {
+    transform: rotateY(180deg) translateZ(0.1px);
+    color: var(--uncaught-card-text);
+    pointer-events: none;
+  }
+  .card.is-flipped .card-front {
+    pointer-events: none;
+  }
+  .card.is-flipped .card-back {
+    pointer-events: auto;
+  }
+  .card.caught .card-back,
+  .card.partial-caught .card-back {
+    color: var(--caught-card-text);
+  }
+  .card-back-surface {
+    position: absolute;
+    inset: var(--card-border-size);
+    border-radius: calc(var(--card-radius) - var(--card-border-size));
+    background: var(--uncaught-card-bg);
+    pointer-events: none;
+    outline: 1px solid transparent;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .card-back-content {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+  .card-back-panel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 16px 2px 4px;
+    box-sizing: border-box;
+  }
+  .card-back-chart {
+    width: 100%;
+    flex: 0 0 60%;
+    min-height: 0;
+    max-height: 145px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .card-back-stat-svg {
+    width: 96%;
+    height: 96%;
+    margin-top: 2px;
+    overflow: visible;
+  }
+  .card-back-radar-ring,
+  .card-back-radar-axis {
+    fill: none;
+    stroke: rgba(255,255,255,0.24);
+    stroke-width: 1.15;
+    vector-effect: non-scaling-stroke;
+  }
+  .card-back-radar-axis-end {
+    fill: rgba(255,255,255,0.9);
+  }
+  .card-back-radar-fill {
+    fill: rgba(146, 197, 255, 0.42);
+    stroke: rgba(226, 241, 255, 0.95);
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+  .card-back-radar-label {
+    fill: currentColor;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+  .card-back-radar-value {
+    fill: currentColor;
+    font-family: 'Gilroy Bold', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 17px;
+  }
+  .card-back-section-title {
+    padding: 4px 6px 0;
+    color: currentColor;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 0.56rem;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.86;
+  }
+  .card-back-status {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 10px 10px;
+    box-sizing: border-box;
+    text-align: center;
+    color: currentColor;
+    font-family: 'Gilroy Bold', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 0.76rem;
+    line-height: 1.25;
+    opacity: 0.92;
+  }
+  .card-back-ability-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 0 2px;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 18px;
+  }
+  .card-back-ability-item,
+  .card-back-ability-empty {
+    min-height: 12px;
+    border-radius: 0;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    color: currentColor;
+    box-sizing: border-box;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  .card-back-ability-empty {
+    justify-content: center;
+    text-align: center;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 0.64rem;
+    opacity: 0.92;
+  }
+  .card-back-ability-slot {
+    min-width: 24px;
+    height: 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 0.49rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+  }
+  .card-back-ability-item.is-hidden .card-back-ability-name {
+    color: #2b2311;
+    background: linear-gradient(135deg, #ffd86b 0%, #b78b2b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .card-back-ability-item.is-hidden .card-back-ability-slot:not(.hidden-slot) {
+    color: #ffe89b;
+    border-color: rgba(255,232,155,0.34);
+  }
+  .card-back-ability-name {
+    min-width: 0;
+    flex: 0 1 auto;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1;
+    letter-spacing: 0em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  @media (max-width: 2000px) {
+    .card-back-panel {
+      padding: 6px 2px 3px;
+      gap: 2px;
+    }
+    .card-back-chart {
+      flex: 0 0 56%;
+      max-height: 126px;
+      margin-top: 15px;
+    }
+    .card-back-stat-svg {
+      width: 100%;
+      height: 100%;
+      margin-top: 0;
+    }
+    .card-back-radar-label {
+      font-size: 13px;
+    }
+    .card-back-radar-value {
+      font-size: 15px;
+    }
+    .card-back-section-title {
+      padding: 15px 6px 0;
+      font-size: 0.54rem;
+    }
+    .card-back-ability-list {
+      gap: 4px;
+      margin-top: 21px;
+    }
+    .card-back-ability-item,
+    .card-back-ability-empty {
+      min-height: 1px;
+      padding: 0 6px;
+    }
+    .card-back-ability-name {
+      font-size: 0.7rem;
+      line-height: 1;
+    }
+    .card-back-ability-slot {
+      min-width: 20px;
+      height: 13px;
+      font-size: 0.42rem;
+    }
+  }
+  .card.ui-colorful .card-front,
+  .card.ui-colorful .card-back {
+    background: var(--card-border-gradient);
+  }
   .card-surface {
     position: absolute;
     inset: var(--card-border-size);
@@ -1530,10 +1853,12 @@
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+    outline: 1px solid transparent;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .card:hover {
-    transform: translateY(-3px);
-    --card-inner-bg: var(--card-hover);
+    top: -3px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.22);
   }
   .card.caught {
@@ -1541,15 +1866,12 @@
     box-shadow: none;
   }
   .card.caught:hover {
-    --card-inner-bg: var(--card-hover);
     box-shadow: none;
   }
   .card.partial-caught {
     --card-inner-bg: var(--uncaught-card-bg);
   }
-  .card.partial-caught:hover {
-    --card-inner-bg: var(--card-hover);
-  }
+  .card.partial-caught:hover {}
   .card.caught .card-surface,
   .card.partial-caught .card-surface {
     background: var(--caught-card-gradient, var(--card-inner-bg, var(--uncaught-card-bg)));
@@ -1567,7 +1889,7 @@
     background: color-mix(in srgb, var(--uncaught-card-bg) 84%, #000000 16%);
     color: var(--uncaught-card-text);
     font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
-    font-size: 0.62rem;
+    font-size: 0.61rem;
     font-weight: 800;
     line-height: 1;
     display: flex;
@@ -1617,12 +1939,14 @@
     filter: none;
     transition: none;
     position: relative; z-index: 1;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .card.caught .sprite { filter: none; }
 
   .favorite-heart {
     position: absolute;
-    top: 8px;
+    top: 11px;
     right: 8px;
     width: 28px;
     height: 24px;
@@ -1660,9 +1984,10 @@
     stroke: var(--favorite-heart-stroke);
     filter: brightness(1.08);
   }
-  .poke-rank {
+  .poke-rank,
+  .card-back-arrow {
     position: absolute;
-    top: 12px;
+    top: 16px;
     left: 14px;
     font-size: 0.93rem;
     font-weight: 900;
@@ -1677,8 +2002,31 @@
     border: 0;
     background: transparent;
     transition: filter 0.12s ease, color 0.12s ease;
+    line-height: 1;
   }
-  .poke-rank.shiny-active {
+  .card-back-arrow {
+    color: currentColor;
+    z-index: 5;
+  }
+  .name-shiny-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+  }
+  .pill-name-slot .name-shiny-toggle {
+    width: 100%;
+    max-width: 100%;
+  }
+  .name-shiny-toggle.shiny-active {
     background: linear-gradient(135deg, #fff8cf 0%, #f6df83 45%, #e4bb49 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -1687,7 +2035,9 @@
     text-shadow: none;
     box-shadow: none;
   }
-  .poke-rank:hover {
+  .poke-rank:hover,
+  .card-back-arrow:hover,
+  .name-shiny-toggle:hover {
     filter: brightness(1.06);
   }
   .rank-form-row {
@@ -1701,7 +2051,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -2px;
     display: block;
     width: auto;
     height: 38px;
@@ -1787,7 +2137,7 @@
   .pill-right { right: 7px; }
 
   .card.ui-minimalist {
-    background: var(--uncaught-card-bg);
+    background: transparent;
     border: 0;
     box-shadow: none;
     padding: 16px 9px 15px;
@@ -1796,25 +2146,43 @@
   .card.ui-minimalist > * {
     z-index: 1;
   }
+  .card.ui-minimalist .card-front,
+  .card.ui-minimalist .card-back {
+    background: var(--uncaught-card-bg);
+  }
+  .card.ui-minimalist .card-back {
+    background: rgb(41, 41, 41);
+  }
   .card.ui-minimalist .card-surface {
     display: none;
   }
+  .card.ui-minimalist .card-back-surface {
+    display: none;
+  }
   .card.ui-minimalist:hover {
-    transform: translateY(-3px);
-    background: var(--card-hover);
+    top: -3px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  .card.ui-minimalist:hover .card-front,
+  .card.ui-minimalist:hover .card-back {
+    background: rgb(41, 41, 41);
+  }
+  .card.ui-minimalist:hover .card-front {
+    background: var(--uncaught-card-bg);
   }
   .card.ui-minimalist.caught,
   .card.ui-minimalist.partial-caught {
-    background: var(--uncaught-card-bg);
+    background: transparent;
     box-shadow: none;
   }
   .card.ui-minimalist.caught:hover,
   .card.ui-minimalist.partial-caught:hover {
-    background: var(--card-hover);
     box-shadow: none;
   }
   .card.ui-minimalist::before {
+    content: none;
+  }
+  .card.ui-minimalist .card-front::before {
     content: '';
     position: absolute;
     left: 0;
@@ -1822,10 +2190,12 @@
     bottom: 0;
     height: var(--caught-fill, 0%);
     background: var(--caught-fill-color);
+    border-radius: inherit;
     z-index: 0;
+    pointer-events: none;
     transition: background 0.16s ease;
   }
-  .card.ui-minimalist:hover::before {
+  .card.ui-minimalist:hover .card-front::before {
     background: var(--caught-fill-color);
   }
   .card.ui-minimalist .name-type-row {
@@ -1911,7 +2281,7 @@
   @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.08)} 100%{transform:scale(1)} }
   .card.catching { animation: pop 0.22s ease; }
 
-  @media (max-width: 1850px) {
+  @media (max-width: 2000px) {
     .grid {
       grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
       gap: 12px;
@@ -1942,7 +2312,8 @@
       width: 24px;
       height: 21px;
     }
-    .poke-rank {
+    .poke-rank,
+    .card-back-arrow {
       top: 12px;
       left: 9px;
       font-size: 0.6rem;
@@ -1987,7 +2358,7 @@
     }
   }
 
-  @media (max-width: 1850px) {
+  @media (max-width: 2000px) {
     .grid {
       grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
       gap: 6px;
@@ -2002,7 +2373,7 @@
     .sprite-wrap {
       width: 96px;
       height: 96px;
-      margin-top: 8px;
+      margin-top: 24px;
     }
     .sprite {
       width: 100px;
@@ -2018,7 +2389,8 @@
       width: 22px;
       height: 19px;
     }
-    .poke-rank {
+    .poke-rank,
+    .card-back-arrow {
       top: 11px;
       left: 8px;
       font-size: 0.56rem;
@@ -2064,14 +2436,14 @@
     }
   }
 
-  @media (max-width: 1850px) {
+  @media (max-width: 2000px) {
     .card.ui-minimalist {
       height: 170px;
       padding: 14px 11px 12px;
       border-radius: 13px;
     }
     .card.ui-minimalist .name-type-row {
-      margin-top: 38px;
+      margin-top: 26px;
       gap: 5px;
       min-height: 18px;
     }
@@ -2403,7 +2775,8 @@
       width: 22px;
       height: 19px;
     }
-    .poke-rank {
+    .poke-rank,
+    .card-back-arrow {
       top: 12px;
       left: 10px;
       font-size: 0.68rem;
@@ -2451,6 +2824,53 @@
     .card.caught .form-toggle,
     .card.partial-caught .form-toggle {
       border-width: 1px;
+    }
+  }
+  .grid {
+    padding-top: 8px;
+  }
+  .card.ui-minimalist .sprite-wrap {
+    margin-top: 40px;
+    transform: translateY(20%);
+  }
+  .card.ui-colorful .sprite-wrap {
+    margin-top: 40px;
+    transform: translateY(20%);
+  }
+  .card.ui-minimalist .name-type-row {
+    margin-top: 55px;
+    transform: translateY(0%);
+  }
+  .card.ui-colorful .form-toggle {
+    top: 14px;
+  }
+  .card.ui-minimalist .form-toggle {
+    top: 14px;
+  }
+  @media (min-width: 1860px) and (max-width: 1950px) {
+    .card.ui-minimalist .sprite-wrap {
+      margin-top: 31px;
+    }
+    .card.ui-minimalist .name-type-row {
+      margin-top: 47px;
+    }
+  }
+  @media (min-width: 1860px) and (max-width: 1950px) {
+    .card.ui-colorful .form-toggle {
+      top: 2px;
+    }
+    .card.ui-minimalist .form-toggle {
+      top: 2px;
+    }
+  }
+  @media (min-width: 1860px) and (max-width: 1950px) {
+    .card.ui-minimalist .sprite-wrap {
+    margin-top: 30px;
+    transform: translateY(20%);
+  }
+  .card.ui-colorful .sprite-wrap {
+    margin-top: 30px;
+    transform: translateY(20%);
     }
   }
 </style>
@@ -5683,9 +6103,9 @@ const FORMS_BY_ID = {
     {suffix:'roaming', label:'Roaming', types:['Ghost']}
   ],
   1017: [
-    {suffix:'wellspring-mask', label:'Wellspring Mask', types:['Grass', 'Water']},
-    {suffix:'hearthflame-mask', label:'Hearthflame Mask', types:['Grass', 'Fire']},
-    {suffix:'cornerstone-mask', label:'Cornerstone Mask', types:['Grass', 'Rock']}
+    {suffix:'wellspring-mask', label:'Wellspring', types:['Grass', 'Water']},
+    {suffix:'hearthflame-mask', label:'Hearthflame', types:['Grass', 'Fire']},
+    {suffix:'cornerstone-mask', label:'Cornerstone', types:['Grass', 'Rock']}
   ],
   3: [
     {suffix:'mega', label:'Mega', types:['Grass', 'Poison']},
@@ -6363,6 +6783,7 @@ const REGIONAL_FORM_FAMILIES = ['alola', 'galar', 'hisui', 'paldea'];
 function getRegionalFormFamily(form) {
   const suffix = String(form && form.suffix || '').toLowerCase();
   const label = String(form && form.label || '').toLowerCase();
+  if (suffix.endsWith('-cap') || label.endsWith(' cap')) return null;
   for (const family of REGIONAL_FORM_FAMILIES) {
     if (suffix === family || suffix.startsWith(family + '-') || label === family || label.startsWith(family + ' ')) return family;
   }
@@ -6553,6 +6974,7 @@ let dexLoading = false;
 let formSelections = {};
 let regionalCaught = {};
 let cardToggleSelections = {};
+let flippedCardSelections = {};
 let lastSelectAllSnapshot = null;
 let favoritePokemon = DEFAULT_FAVORITE_POKEMON;
 let selectedTypeFilters = [];
@@ -6630,7 +7052,8 @@ function loadActiveInstanceState() {
   caught = new Set(readInstanceJson('caught', []));
   formSelections = {};
   regionalCaught = readInstanceJson('regional_caught', {});
-  cardToggleSelections = {};
+  cardToggleSelections = readInstanceJson('card_toggles', {});
+  flippedCardSelections = {};
   favoritePokemon = readInstanceJson('favorite_list', null) || DEFAULT_FAVORITE_POKEMON;
   themeSettings = normalizeThemeSettings(readInstanceJson('theme_settings', {}));
   selectedDex = localStorage.getItem(getInstanceStorageKey(DEX_MODE_KEY)) || 'national';
@@ -7435,6 +7858,57 @@ function getImportedEntriesForId(id) {
   return baseEntry ? [baseEntry] : [];
 }
 
+function formatFormLabel(label) {
+  const text = String(label || 'Normal');
+  return text.replace(/^Gigantamax\b/i, 'G-MAX');
+}
+
+function isFemaleForm(form) {
+  const suffix = String(form && form.suffix || '').toLowerCase();
+  const label = String(form && form.label || '').toLowerCase();
+  return suffix === 'female' || suffix === 'f' || suffix.endsWith('-female') || suffix.endsWith('-f') || /\bfemale\b/.test(label);
+}
+
+function isMegaForm(form) {
+  const suffix = String(form && form.suffix || '').toLowerCase();
+  const label = String(form && form.label || '').toLowerCase();
+  return suffix.startsWith('mega') || /\bmega\b/.test(label);
+}
+
+function isGmaxForm(form) {
+  const suffix = String(form && form.suffix || '').toLowerCase();
+  const label = String(form && form.label || '').toLowerCase();
+  return suffix.includes('gigantamax') || suffix.includes('gmax') || label.includes('gigantamax') || label.includes('g-max');
+}
+
+function getFormSortRank(form) {
+  if (isFemaleForm(form)) return 0;
+  if (!form || !form.suffix || String(form.label || '').toLowerCase() === 'normal') return 1;
+  if (isMegaForm(form)) return 3;
+  if (isGmaxForm(form)) return 4;
+  return 2;
+}
+
+function sortForms(forms) {
+  return forms
+    .map((form, index) => ({ ...form, __sortIndex: index }))
+    .sort((a, b) => {
+      const rankDiff = getFormSortRank(a) - getFormSortRank(b);
+      return rankDiff || (a.__sortIndex - b.__sortIndex);
+    })
+    .map(({ __sortIndex, ...form }) => form);
+}
+
+function getCycleForms(forms) {
+  const base = forms.find(form => !form || !form.suffix || String(form.label || '').toLowerCase() === 'normal');
+  if (!base) return forms;
+  const female = forms.find(form => form !== base && isFemaleForm(form));
+  const middle = forms.filter(form => form !== base && form !== female && !isMegaForm(form) && !isGmaxForm(form));
+  const megas = forms.filter(form => form !== base && form !== female && isMegaForm(form) && !isGmaxForm(form));
+  const gmaxForms = forms.filter(form => form !== base && form !== female && isGmaxForm(form));
+  return [base, ...(female ? [female] : []), ...middle, ...megas, ...gmaxForms];
+}
+
 function getAvailableForms(entryOrId) {
   const entry = entryOrId && typeof entryOrId === 'object' ? entryOrId : getBaseEntryForId(entryOrId);
   const id = entry.id;
@@ -7442,22 +7916,21 @@ function getAvailableForms(entryOrId) {
   const baseSuffix = BASE_FORM_SUFFIX_BY_ID[id];
   const rawForms = (FORMS_BY_ID[id] || []).filter(form => form.suffix !== baseSuffix).map(form => ({
     suffix: ((id === 493 || id === 773) && form.suffix === 'normal') ? '' : (form.suffix || ''),
-    label: form.label || 'Normal',
+    label: formatFormLabel(form.label || 'Normal'),
     types: form.types || TYPES_BY_ID[id] || [],
     image: form.image
   }));
 
   if (!splitFamily) {
-    const base = { suffix: '', label: 'Normal', types: TYPES_BY_ID[id] || [] };
-    const extras = rawForms.filter(form => !getRegionalFormFamily(form));
+    const base = { suffix: '', label: formatFormLabel('Normal'), types: TYPES_BY_ID[id] || [] };
+    const extras = sortForms(rawForms.filter(form => !getRegionalFormFamily(form)));
     if (id === 666 && extras.length) return extras;
-    return extras.some(form => form.suffix === '') ? extras : [base, ...extras];
+    return extras.some(form => form.suffix === '') ? extras : sortForms([base, ...extras]);
   }
 
-  const familyForms = rawForms.filter(form => getRegionalFormFamily(form) === splitFamily);
-  if (!familyForms.length) return [{ suffix: splitFamily, label: splitFamily[0].toUpperCase() + splitFamily.slice(1), types: TYPES_BY_ID[id] || [] }];
-  const primary = familyForms.find(form => form.suffix === splitFamily) || familyForms[0];
-  return [primary, ...familyForms.filter(form => form !== primary)];
+  const familyForms = sortForms(rawForms.filter(form => getRegionalFormFamily(form) === splitFamily));
+  if (!familyForms.length) return [{ suffix: splitFamily, label: formatFormLabel(splitFamily[0].toUpperCase() + splitFamily.slice(1)), types: TYPES_BY_ID[id] || [] }];
+  return familyForms;
 }
 
 function getDexPreferredFormSuffix(id) {
@@ -7488,6 +7961,12 @@ function getCurrentFormInfo(entry) {
     const preferredForm = forms.find(form => form.suffix === preferredSuffix);
     if (preferredForm) return preferredForm;
   }
+  if (entry && entry.splitFamily) {
+    const regionalBaseForm = forms.find(form => form.suffix === entry.splitFamily);
+    if (regionalBaseForm) return regionalBaseForm;
+  }
+  const baseForm = forms.find(form => form.suffix === '' || String(form.label || '').toLowerCase() === 'normal');
+  if (baseForm) return baseForm;
   return forms[0];
 }
 
@@ -7523,6 +8002,413 @@ function getDisplayName(p) {
   const pattern = new RegExp(`\\s+${suffixText.replace(/\s+/g, '\\s+')}$`, 'i');
   const baseName = p.name.replace(pattern, '');
   return regionalSuffix ? `${baseName}${regionalSuffix}` : baseName;
+}
+
+const CARD_BACK_STAT_LAYOUT = [
+  { key: 'hp', label: 'HP', angle: -90, labelX: 90.0, labelY: 13.0, valueX: 90.0, valueY: -7.0 },
+  { key: 'attack', label: 'ATK', angle: -30, labelX: 169.88, labelY: 53.5, valueX: 169.88, valueY: 33.5 },
+  { key: 'defense', label: 'DEF', angle: 30, labelX: 169.88, labelY: 122.5, valueX: 169.88, valueY: 142.5 },
+  { key: 'speed', label: 'SPE', angle: 90, labelX: 90.0, labelY: 168.0, valueX: 90.0, valueY: 188.0 },
+  { key: 'special-defense', label: 'SPD', angle: 150, labelX: 10.12, labelY: 122.5, valueX: 10.12, valueY: 142.5 },
+  { key: 'special-attack', label: 'SPA', angle: 210, labelX: 10.12, labelY: 53.5, valueX: 10.12, valueY: 33.5 }
+];
+const CARD_BACK_RADAR_CENTER_X = 90;
+const CARD_BACK_RADAR_CENTER_Y = 88;
+const CARD_BACK_RADAR_RADIUS = 60;
+const POKEMON_PROFILE_CACHE_KEY = 'pkmn_profile_cache_v1';
+const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2/pokemon/';
+const POKEAPI_FORM_SLUG_OVERRIDES = {
+  '128:paldea': 'tauros-paldea-combat-breed',
+  '128:paldea-blaze-breed': 'tauros-paldea-blaze-breed',
+  '128:paldea-aqua-breed': 'tauros-paldea-aqua-breed',
+  '555:galar': 'darmanitan-galar-standard',
+  '718:base': 'zygarde-50',
+  '718:10-percent': 'zygarde-10',
+  '718:complete': 'zygarde-complete',
+  '745:base': 'lycanroc-midday',
+  '774:base': 'minior-red-meteor',
+  '774:red': 'minior-red',
+  '774:orange': 'minior-red',
+  '774:yellow': 'minior-red',
+  '774:green': 'minior-red',
+  '774:blue': 'minior-red',
+  '774:indigo': 'minior-red',
+  '774:violet': 'minior-red',
+  '800:dusk-mane': 'necrozma-dusk',
+  '800:dawn-wings': 'necrozma-dawn',
+  '892:gigantamax-single-strike': 'urshifu',
+  '892:gigantamax-rapid-strike': 'urshifu-rapid-strike'
+};
+const BASE_PROFILE_FALLBACK_IDS = new Set([25, 201, 351, 412, 421, 422, 423, 585, 586, 666, 676, 741, 778, 845, 849, 869, 877, 893, 925, 931]);
+const BASE_PROFILE_FALLBACK_SUFFIXES = new Set([
+  'gigantamax',
+  'original-cap',
+  'sunny',
+  'rainy',
+  'snowy',
+  'overcast',
+  'east-sea',
+  'spring',
+  'summer',
+  'autumn',
+  'winter',
+  'pom-pom',
+  'pau',
+  'sensu',
+  'disguised',
+  'busted',
+  'gulping',
+  'gorging',
+  'low-key',
+  'full-belly',
+  'hangry',
+  'dada',
+  'green-plumage',
+  'blue-plumage',
+  'yellow-plumage',
+  'white-plumage',
+  'family-of-four',
+  'family-of-three',
+  'la-reine',
+  'pharaoh',
+  'debutante',
+  'kabuki',
+  'star',
+  'heart',
+  'dandy',
+  'diamond',
+  'matron',
+  'original-color'
+]);
+let pokemonProfileCache = loadPokemonProfileCache();
+const pokemonProfileFormState = {};
+const pokemonProfileFormRequests = {};
+const pokemonProfileSlugRequests = {};
+let pokemonProfileCacheSaveTimer = null;
+const unresolvedPokemonProfileForms = new Set();
+
+function escapeHtml(text) {
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function sanitizePokeApiSlug(text) {
+  return String(text || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/♀/g, '-f')
+    .replace(/♂/g, '-m')
+    .replace(/[’'".:]/g, '')
+    .replace(/%/g, 'percent')
+    .replace(/[\/\s]+/g, '-')
+    .replace(/[^a-zA-Z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+}
+
+function formatPokemonProfileName(text) {
+  return String(text || '')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function formatPokemonProfileAbilitySlot(ability) {
+  return ability.hidden ? 'HA' : String(ability.slot || '?');
+}
+
+function normalizeFetchedPokemonProfile(data) {
+  const stats = Object.fromEntries((data.stats || []).map(item => [item.stat.name, Number(item.base_stat || 0)]));
+  const abilities = Array.isArray(data.abilities)
+    ? data.abilities
+      .slice()
+      .sort((a, b) => Number(a.slot || 99) - Number(b.slot || 99))
+      .map(ability => ({
+        slot: formatPokemonProfileAbilitySlot(ability),
+        name: formatPokemonProfileName(ability.ability && ability.ability.name),
+        hidden: !!ability.is_hidden
+      }))
+    : [];
+  return {
+    stats: {
+      hp: stats.hp || 0,
+      attack: stats.attack || 0,
+      defense: stats.defense || 0,
+      'special-attack': stats['special-attack'] || 0,
+      'special-defense': stats['special-defense'] || 0,
+      speed: stats.speed || 0
+    },
+    abilities,
+    abilitiesUnknown: abilities.length === 0
+  };
+}
+
+function loadPokemonProfileCache() {
+  try {
+    const raw = localStorage.getItem(POKEMON_PROFILE_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function queuePokemonProfileCacheSave() {
+  clearTimeout(pokemonProfileCacheSaveTimer);
+  pokemonProfileCacheSaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(POKEMON_PROFILE_CACHE_KEY, JSON.stringify(pokemonProfileCache));
+    } catch (error) {
+      // Ignore quota / storage errors and keep in-memory cache.
+    }
+  }, 120);
+}
+
+function pushUniqueStrings(target, values) {
+  values.forEach(value => {
+    if (value && !target.includes(value)) target.push(value);
+  });
+}
+
+function getPokemonProfileFormKey(entry, formInfo) {
+  const suffix = String(formInfo && formInfo.suffix || '');
+  return suffix || entry.splitFamily || BASE_FORM_SUFFIX_BY_ID[entry.id] || 'base';
+}
+
+function getPokemonProfileFormCacheKey(entry, formInfo) {
+  return `${getEntryKey(entry)}|${getPokemonProfileFormKey(entry, formInfo)}`;
+}
+
+function getPokemonBaseSpeciesName(entry) {
+  let baseName = String(entry && entry.name || '');
+  if (!entry || entry.splitFamily) return baseName;
+  const baseSuffix = BASE_FORM_SUFFIX_BY_ID[entry.id];
+  if (!baseSuffix) return baseName;
+  const suffixText = baseSuffix.replace(/-/g, ' ');
+  const pattern = new RegExp(`\\s+${suffixText.replace(/\s+/g, '\\s+')}$`, 'i');
+  return baseName.replace(pattern, '');
+}
+
+function getPokemonBaseSpeciesSlug(entry) {
+  return sanitizePokeApiSlug(getPokemonBaseSpeciesName(entry));
+}
+
+function getPokemonProfileBaseSlugs(entry) {
+  const speciesSlug = getPokemonBaseSpeciesSlug(entry);
+  const fullEntrySlug = sanitizePokeApiSlug(entry.name);
+  const slugs = [];
+  pushUniqueStrings(slugs, Array.isArray(POKEAPI_FORM_SLUG_OVERRIDES[`${entry.id}:base`]) ? POKEAPI_FORM_SLUG_OVERRIDES[`${entry.id}:base`] : [POKEAPI_FORM_SLUG_OVERRIDES[`${entry.id}:base`]]);
+  if (entry.splitFamily) pushUniqueStrings(slugs, [`${speciesSlug}-${entry.splitFamily}`]);
+  if (!entry.splitFamily && BASE_FORM_SUFFIX_BY_ID[entry.id]) pushUniqueStrings(slugs, [`${speciesSlug}-${sanitizePokeApiSlug(BASE_FORM_SUFFIX_BY_ID[entry.id])}`]);
+  pushUniqueStrings(slugs, [fullEntrySlug, speciesSlug]);
+  return slugs.filter(Boolean);
+}
+
+function getPokemonFormSlugAliases(formKey) {
+  const normalized = sanitizePokeApiSlug(formKey);
+  if (!normalized) return [];
+  const aliases = [normalized];
+  if (normalized === 'f') aliases.push('female');
+  if (normalized === 'female') aliases.push('f');
+  if (normalized === 'male') aliases.push('m');
+  if (normalized === 'hisui-f') aliases.push('hisui-female');
+  return aliases.filter(Boolean);
+}
+
+function shouldAllowPokemonBaseProfileFallback(entry, formInfo, formKey) {
+  if (!formInfo || (!formInfo.suffix && !entry.splitFamily)) return false;
+  if (entry.splitFamily) return false;
+  const normalized = sanitizePokeApiSlug(formKey);
+  if (!normalized) return false;
+  if (normalized.startsWith('gigantamax')) return true;
+  if (normalized.endsWith('-cap')) return true;
+  if (BASE_PROFILE_FALLBACK_SUFFIXES.has(normalized)) return true;
+  if (BASE_PROFILE_FALLBACK_IDS.has(entry.id)) return true;
+  return false;
+}
+
+function getPokemonProfileSlugCandidates(entry, formInfo) {
+  const formKey = getPokemonProfileFormKey(entry, formInfo);
+  const speciesSlug = getPokemonBaseSpeciesSlug(entry);
+  const slugs = [];
+  const override = POKEAPI_FORM_SLUG_OVERRIDES[`${entry.id}:${formKey}`];
+  pushUniqueStrings(slugs, Array.isArray(override) ? override : [override]);
+  if (formKey === 'base') {
+    pushUniqueStrings(slugs, getPokemonProfileBaseSlugs(entry));
+  } else {
+    const suffixCandidates = getPokemonFormSlugAliases(formKey);
+    pushUniqueStrings(slugs, suffixCandidates.map(suffix => `${speciesSlug}-${suffix}`));
+    if (shouldAllowPokemonBaseProfileFallback(entry, formInfo, formKey)) {
+      pushUniqueStrings(slugs, getPokemonProfileBaseSlugs(entry));
+    }
+  }
+  return slugs.filter(Boolean);
+}
+
+function getCardBackProfileState(entry, formInfo) {
+  const formCacheKey = getPokemonProfileFormCacheKey(entry, formInfo);
+  const knownState = pokemonProfileFormState[formCacheKey];
+  if (knownState && knownState.resolvedSlug) {
+    const cached = pokemonProfileCache[knownState.resolvedSlug];
+    if (cached && cached.status === 'ready') return { status: 'ready', profile: cached.profile };
+  }
+
+  const candidates = getPokemonProfileSlugCandidates(entry, formInfo);
+  for (const slug of candidates) {
+    const cached = pokemonProfileCache[slug];
+    if (cached && cached.status === 'ready') {
+      pokemonProfileFormState[formCacheKey] = { resolvedSlug: slug, missing: false };
+      return { status: 'ready', profile: cached.profile };
+    }
+  }
+
+  if (knownState && knownState.missing) return { status: 'missing' };
+  if (candidates.length && candidates.every(slug => pokemonProfileCache[slug] && pokemonProfileCache[slug].status === 'missing')) {
+    pokemonProfileFormState[formCacheKey] = { missing: true };
+    return { status: 'missing' };
+  }
+  if (pokemonProfileFormRequests[formCacheKey]) return { status: 'loading' };
+  return { status: 'loading' };
+}
+
+async function fetchPokemonProfileSlug(slug) {
+  if (!slug) return { status: 'missing' };
+  if (pokemonProfileCache[slug]) return pokemonProfileCache[slug];
+  if (pokemonProfileSlugRequests[slug]) return pokemonProfileSlugRequests[slug];
+
+  pokemonProfileSlugRequests[slug] = fetch(`${POKEAPI_BASE_URL}${slug}`)
+    .then(async response => {
+      if (response.status === 404) {
+        pokemonProfileCache[slug] = { status: 'missing' };
+        queuePokemonProfileCacheSave();
+        return pokemonProfileCache[slug];
+      }
+      if (!response.ok) throw new Error(`Failed to load ${slug}`);
+      const data = await response.json();
+      pokemonProfileCache[slug] = { status: 'ready', profile: normalizeFetchedPokemonProfile(data) };
+      queuePokemonProfileCacheSave();
+      return pokemonProfileCache[slug];
+    })
+    .catch(error => ({ status: 'error' }))
+    .finally(() => {
+      delete pokemonProfileSlugRequests[slug];
+    });
+
+  return pokemonProfileSlugRequests[slug];
+}
+
+function ensurePokemonProfileForCard(entry, formInfo, card = null) {
+  const formCacheKey = getPokemonProfileFormCacheKey(entry, formInfo);
+  const currentState = getCardBackProfileState(entry, formInfo);
+  if (currentState.status !== 'loading') return Promise.resolve(currentState);
+  if (pokemonProfileFormRequests[formCacheKey]) return pokemonProfileFormRequests[formCacheKey];
+
+  const candidates = getPokemonProfileSlugCandidates(entry, formInfo);
+  pokemonProfileFormState[formCacheKey] = { loading: true, candidates };
+
+  pokemonProfileFormRequests[formCacheKey] = (async () => {
+    for (const slug of candidates) {
+      const result = await fetchPokemonProfileSlug(slug);
+      if (result && result.status === 'ready') {
+        pokemonProfileFormState[formCacheKey] = { resolvedSlug: slug, missing: false };
+        unresolvedPokemonProfileForms.delete(formCacheKey);
+        return result;
+      }
+      if (result && result.status === 'error') break;
+    }
+    pokemonProfileFormState[formCacheKey] = { missing: true };
+    unresolvedPokemonProfileForms.add(formCacheKey);
+    return { status: 'missing' };
+  })().finally(() => {
+    delete pokemonProfileFormRequests[formCacheKey];
+    const targetCard = card && card.isConnected ? card : null;
+    if (targetCard) refreshCardBackContent(getEntryKey(entry), targetCard);
+    else refreshCardBackContent(getEntryKey(entry));
+  });
+
+  return pokemonProfileFormRequests[formCacheKey];
+}
+
+function getRadarPoint(cx, cy, radius, angleDeg) {
+  const angle = ((angleDeg - 90) * Math.PI) / 180;
+  return {
+    x: cx + (Math.cos(angle) * radius),
+    y: cy + (Math.sin(angle) * radius)
+  };
+}
+
+function getRadarPolygonPoints(scale, cx = CARD_BACK_RADAR_CENTER_X, cy = CARD_BACK_RADAR_CENTER_Y, radius = CARD_BACK_RADAR_RADIUS) {
+  return CARD_BACK_STAT_LAYOUT.map(axis => {
+    const point = getRadarPoint(cx, cy, radius * scale, axis.angle + 90);
+    return `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+  }).join(' ');
+}
+
+function getRadarDataPoints(stats, cx = CARD_BACK_RADAR_CENTER_X, cy = CARD_BACK_RADAR_CENTER_Y, radius = CARD_BACK_RADAR_RADIUS, maxStat = 150) {
+  return CARD_BACK_STAT_LAYOUT.map(axis => {
+    const value = Number(stats[axis.key] || 0);
+    const clamped = Math.max(0, Math.min(1, value / maxStat));
+    const point = getRadarPoint(cx, cy, radius * clamped, axis.angle + 90);
+    return `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+  }).join(' ');
+}
+
+function renderCardBackRadar(profile) {
+  const stats = profile.stats || {};
+  const axisLines = CARD_BACK_STAT_LAYOUT.map(axis => {
+    const end = getRadarPoint(CARD_BACK_RADAR_CENTER_X, CARD_BACK_RADAR_CENTER_Y, CARD_BACK_RADAR_RADIUS, axis.angle + 90);
+    return `<line class="card-back-radar-axis" x1="${CARD_BACK_RADAR_CENTER_X}" y1="${CARD_BACK_RADAR_CENTER_Y}" x2="${end.x.toFixed(2)}" y2="${end.y.toFixed(2)}"></line><circle class="card-back-radar-axis-end" cx="${end.x.toFixed(2)}" cy="${end.y.toFixed(2)}" r="2.9"></circle>`;
+  }).join('');
+  const labels = CARD_BACK_STAT_LAYOUT.map(axis => {
+    const value = Number(stats[axis.key] || 0);
+    return `<text class="card-back-radar-label" x="${axis.labelX.toFixed(2)}" y="${axis.labelY.toFixed(2)}" text-anchor="middle" dominant-baseline="middle">${axis.label}</text><text class="card-back-radar-value" x="${axis.valueX.toFixed(2)}" y="${axis.valueY.toFixed(2)}" text-anchor="middle" dominant-baseline="middle">${value}</text>`;
+  }).join('');
+  return `
+    <svg class="card-back-stat-svg" viewBox="0 0 180 176" aria-hidden="true" focusable="false">
+      <polygon class="card-back-radar-ring" points="${getRadarPolygonPoints(1)}"></polygon>
+      <polygon class="card-back-radar-ring" points="${getRadarPolygonPoints(2 / 3)}"></polygon>
+      <polygon class="card-back-radar-ring" points="${getRadarPolygonPoints(1 / 3)}"></polygon>
+      ${axisLines}
+      <polygon class="card-back-radar-fill" points="${getRadarDataPoints(stats)}"></polygon>
+      ${labels}
+    </svg>
+  `;
+}
+
+function renderCardBackAbilities(profile) {
+  if (profile.abilitiesUnknown) {
+    return `<div class="card-back-ability-empty">Abilities Unknown</div>`;
+  }
+  const abilities = Array.isArray(profile.abilities) ? profile.abilities : [];
+  if (!abilities.length) {
+    return `<div class="card-back-ability-empty">ABILITIES UNKNOWN</div>`;
+  }
+  return abilities.map(ability => `
+    <div class="card-back-ability-item${ability.hidden ? ' is-hidden' : ''}">
+      <span class="card-back-ability-name">${escapeHtml((ability.name || 'Unknown Ability').toUpperCase())}</span>
+    </div>
+  `).join('');
+}
+
+function renderCardBackStatus(message) {
+  return `<div class="card-back-status">${escapeHtml(message)}</div>`;
+}
+
+function renderCardBackContent(entry, formInfo) {
+  const state = getCardBackProfileState(entry, formInfo);
+  if (state.status === 'missing') return renderCardBackStatus('Stats unavailable for this form.');
+  if (state.status !== 'ready') return renderCardBackStatus('Loading stats...');
+  const profile = state.profile;
+  return `
+    <div class="card-back-panel">
+      <div class="card-back-chart">${renderCardBackRadar(profile)}</div>
+      <div class="card-back-ability-list">${renderCardBackAbilities(profile)}</div>
+    </div>
+  `;
 }
 
 function getTrackedForms(entry) {
@@ -7832,6 +8718,7 @@ async function loadDexData(mode) {
 }
 function changeDexMode(mode) {
   selectedDex = mode;
+  flippedCardSelections = {};
   localStorage.setItem(getInstanceStorageKey(DEX_MODE_KEY), selectedDex);
   updateDexTriggerLabel();
   loadDexData(mode);
@@ -8047,13 +8934,30 @@ function getRenderedPokemonById(entryKeyOrId) {
 }
 
 function wireCardEvents(card, entry, selectedSuffix) {
-  card.onclick = () => toggle(entry, selectedSuffix, card);
-  const favoriteHeart = card.querySelector('.favorite-heart');
-  if (favoriteHeart) favoriteHeart.onclick = (event) => handleFavoriteClick(entry, event);
-  const formToggle = card.querySelector('.form-toggle');
-  if (formToggle) formToggle.onclick = (event) => cycleForm(entry, event);
-  const cardToggle = card.querySelector('.poke-rank');
-  if (cardToggle) cardToggle.onclick = (event) => toggleCardButton(entry, event);
+  const entryKey = getEntryKey(entry);
+  card.onclick = (event) => {
+    const clickTarget = event.target && event.target.nodeType === 3 ? event.target.parentElement : event.target;
+    if (!clickTarget || !clickTarget.closest) return;
+
+    if (clickTarget.closest('.favorite-heart')) {
+      handleFavoriteClick(entry, event);
+      return;
+    }
+    if (clickTarget.closest('.form-toggle')) {
+      cycleForm(entry, event);
+      return;
+    }
+    if (clickTarget.closest('.name-shiny-toggle')) {
+      toggleShiny(entry, event);
+      return;
+    }
+    if (clickTarget.closest('.poke-rank') || clickTarget.closest('.card-back-arrow')) {
+      toggleCardFlip(entry, event);
+      return;
+    }
+    if (flippedCardSelections[entryKey]) return;
+    toggle(entry, selectedSuffix, card);
+  };
 }
 
 let activeSpecialFormPickerId = null;
@@ -8102,7 +9006,7 @@ function openSpecialFormPicker(entry, event) {
   const forms = getAvailableForms(entry);
 
   activeSpecialFormPickerId = entryKey;
-  title.textContent = id === 869 ? 'Select Alcremie Form' : id === 201 ? 'Select Unown Form' : id === 493 ? 'Select Arceus Form' : id === 773 ? 'Select Silvally Form' : 'Select Form';
+  title.textContent = id === 25 ? 'Select Pikachu Form' : id === 869 ? 'Select Alcremie Form' : id === 201 ? 'Select Unown Form' : id === 666 ? 'Select Vivillon Form' : id === 493 ? 'Select Arceus Form' : id === 773 ? 'Select Silvally Form' : 'Select Form';
   grid.classList.toggle('arceus-grid', id === 493 || id === 773);
   grid.innerHTML = '';
 
@@ -8110,7 +9014,7 @@ function openSpecialFormPicker(entry, event) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `special-form-card${currentSuffix === form.suffix ? ' active' : ''}`;
-    button.innerHTML = id === 869 || id === 201 ? `
+    button.innerHTML = id === 25 || id === 869 || id === 201 || id === 666 ? `
       <div class="special-form-sprite-wrap">
         <img class="special-form-sprite" src="${getDisplaySpriteUrl(id, form, isCardToggleOn)}" alt="${form.label}" loading="lazy">
       </div>
@@ -8149,11 +9053,13 @@ function renderPokemonCard(card, p, favoriteRankById) {
   const catchState = getCatchState(p.id, formInfo.suffix, p);
   const targetFill = `${Math.round(catchState.ratio * 100)}%`;
   const isFavorite = !!favoriteRankById[entryKey];
-  const isCardToggleOn = !!cardToggleSelections[entryKey];
+  const isShinyActive = !!cardToggleSelections[entryKey];
+  const isFlipped = !!flippedCardSelections[entryKey];
+  const shinyNameMarkup = `<button class="${nameClass} name-shiny-toggle${isShinyActive ? ' shiny-active' : ''}" type="button" title="Toggle shiny" aria-label="Toggle shiny">${displayName}</button>`;
   const nameTypeMarkup = isMinimalistUi
-    ? `<div class="name-type-row"><div class="${nameClass}">${displayName}</div>${renderMinimalTypeBadges(typeInfo)}</div>`
-    : `<div class="name-type-row" style="--nameplate-gradient:${getNameplateGradient(typeInfo)}">${renderTypeBadges(typeInfo).replace('%NAME%', `<span class="${nameClass}">${displayName}</span>`)}</div>`;
-  card.className = `card ${isMinimalistUi ? 'ui-minimalist' : 'ui-colorful'}${catchState.isFull ? ' caught' : ''}${catchState.isPartial ? ' partial-caught' : ''}`;
+    ? `<div class="name-type-row">${shinyNameMarkup}${renderMinimalTypeBadges(typeInfo)}</div>`
+    : `<div class="name-type-row" style="--nameplate-gradient:${getNameplateGradient(typeInfo)}">${renderTypeBadges(typeInfo).replace('%NAME%', shinyNameMarkup)}</div>`;
+  card.className = `card ${isMinimalistUi ? 'ui-minimalist' : 'ui-colorful'}${catchState.isFull ? ' caught' : ''}${catchState.isPartial ? ' partial-caught' : ''}${isFlipped ? ' is-flipped' : ''}`;
   card.dataset.id = p.id;
   card.dataset.entryKey = entryKey;
   card.dataset.suffix = formInfo.suffix || '';
@@ -8161,41 +9067,49 @@ function renderPokemonCard(card, p, favoriteRankById) {
   card.style.setProperty('--card-border-gradient', getCardBorderGradient(typeInfo));
   card.style.setProperty('--nameplate-gradient', getNameplateGradient(typeInfo));
   card.style.setProperty('--caught-card-gradient', getNameplateGradient(typeInfo));
-  if (isMinimalistUi) {
-    card.innerHTML = `
+  const frontMarkup = isMinimalistUi ? `
       <button class="favorite-heart${isFavorite ? ' is-favorite' : ''}" type="button" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}" aria-label="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
         <svg viewBox="0 0 48 42" aria-hidden="true">
           <path d="M24 36C14 29 8 23 8 16c0-4.6 3.4-8 7.8-8 3.2 0 5.9 1.6 8.2 4.5C26.3 9.6 29 8 32.2 8 36.6 8 40 11.4 40 16c0 7-6 13-16 20Z"/>
         </svg>
       </button>
-      ${availableForms.length > 1 ? `<button class="form-toggle" type="button" title="${p.id === 869 || p.id === 201 || p.id === 493 || p.id === 773 ? 'Choose form' : 'Cycle form'}">${formInfo.label}</button>` : ''}
+      ${availableForms.length > 1 ? `<button class="form-toggle" type="button" title="${p.id === 25 || p.id === 869 || p.id === 201 || p.id === 493 || p.id === 666 || p.id === 773 ? 'Choose form' : 'Cycle form'}">${formInfo.label}</button>` : ''}
       <div class="sprite-wrap">
         <div class="caught-ring"></div>
-        <img class="sprite" src="${getDisplaySpriteUrl(p.id, formInfo, isCardToggleOn)}" alt="${p.name}" loading="lazy">
+        <img class="sprite" src="${getDisplaySpriteUrl(p.id, formInfo, isShinyActive)}" alt="${p.name}" loading="lazy">
         <div class="caught-badge">✓</div>
       </div>
-      <button class="poke-rank${isCardToggleOn ? ' shiny-active' : ''}" type="button" title="Toggle shiny" aria-label="Toggle shiny">${label}</button>
+      <button class="poke-rank" type="button" title="Flip card" aria-label="Flip card">${label}</button>
       ${nameTypeMarkup}
-    `;
-  } else {
-    card.innerHTML = `
+    ` : `
       <div class="card-surface"></div>
       <button class="favorite-heart${isFavorite ? ' is-favorite' : ''}" type="button" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}" aria-label="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
         <svg viewBox="0 0 48 42" aria-hidden="true">
           <path d="M24 36C14 29 8 23 8 16c0-4.6 3.4-8 7.8-8 3.2 0 5.9 1.6 8.2 4.5C26.3 9.6 29 8 32.2 8 36.6 8 40 11.4 40 16c0 7-6 13-16 20Z"/>
         </svg>
       </button>
-      ${availableForms.length > 1 ? `<button class="form-toggle" type="button" title="${p.id === 869 || p.id === 201 || p.id === 493 || p.id === 773 ? 'Choose form' : 'Cycle form'}">${formInfo.label}</button>` : ''}
+      ${availableForms.length > 1 ? `<button class="form-toggle" type="button" title="${p.id === 25 || p.id === 869 || p.id === 201 || p.id === 493 || p.id === 666 || p.id === 773 ? 'Choose form' : 'Cycle form'}">${formInfo.label}</button>` : ''}
       <div class="sprite-wrap">
         <div class="caught-ring"></div>
-        <img class="sprite" src="${getDisplaySpriteUrl(p.id, formInfo, isCardToggleOn)}" alt="${p.name}" loading="lazy">
+        <img class="sprite" src="${getDisplaySpriteUrl(p.id, formInfo, isShinyActive)}" alt="${p.name}" loading="lazy">
         <div class="caught-badge">✓</div>
       </div>
-      <button class="poke-rank${isCardToggleOn ? ' shiny-active' : ''}" type="button" title="Toggle shiny" aria-label="Toggle shiny">${label}</button>
+      <button class="poke-rank" type="button" title="Flip card" aria-label="Flip card">${label}</button>
       ${nameTypeMarkup}
     `;
-  }
+  const backMarkup = `
+      <div class="card-back-surface"></div>
+      <button class="card-back-arrow" type="button" title="Show front" aria-label="Show front">←</button>
+      <div class="card-back-content">${renderCardBackContent(p, formInfo)}</div>
+    `;
+  card.innerHTML = `
+    <div class="card-flip-shell">
+      <div class="card-face card-front">${frontMarkup}</div>
+      <div class="card-face card-back">${backMarkup}</div>
+    </div>
+  `;
   wireCardEvents(card, p, formInfo.suffix);
+  if (isFlipped) ensurePokemonProfileForCard(p, formInfo, card);
 }
 
 function refreshVisibleCard(entryKeyOrId, card = null) {
@@ -8207,13 +9121,44 @@ function refreshVisibleCard(entryKeyOrId, card = null) {
   return true;
 }
 
-function toggleCardButton(entry, event) {
+function refreshCardBackContent(entryKeyOrId, card = null) {
+  const targetCard = card || document.querySelector(`.card[data-entry-key="${String(entryKeyOrId)}"]`) || document.querySelector(`.card[data-id="${entryKeyOrId}"]`);
+  const pokemon = getRenderedPokemonById(entryKeyOrId);
+  if (!targetCard || !pokemon) return false;
+  const backContent = targetCard.querySelector('.card-back-content');
+  if (!backContent) return false;
+  backContent.innerHTML = renderCardBackContent(pokemon, getDisplayedFormInfo(pokemon));
+  return true;
+}
+
+function toggleShiny(entry, event) {
   event.stopPropagation();
   const entryKey = getEntryKey(entry);
   if (cardToggleSelections[entryKey]) delete cardToggleSelections[entryKey];
   else cardToggleSelections[entryKey] = true;
   saveCardToggles();
   refreshVisibleCard(entryKey, event.currentTarget.closest('.card'));
+}
+
+function toggleCardFlip(entry, event) {
+  event.stopPropagation();
+  const entryKey = getEntryKey(entry);
+  const card = event.currentTarget.closest('.card');
+  const shouldFlip = !flippedCardSelections[entryKey];
+  if (shouldFlip) flippedCardSelections[entryKey] = true;
+  else delete flippedCardSelections[entryKey];
+
+  if (!card) {
+    refreshVisibleCard(entryKey);
+    return;
+  }
+
+  if (shouldFlip) {
+    requestAnimationFrame(() => card.classList.add('is-flipped'));
+    ensurePokemonProfileForCard(entry, getDisplayedFormInfo(entry), card);
+  } else {
+    card.classList.remove('is-flipped');
+  }
 }
 
 function toggle(entry, selectedSuffix, card) {
@@ -8246,11 +9191,11 @@ function cycleForm(entry, event) {
   event.stopPropagation();
   const id = entry.id;
   const entryKey = getEntryKey(entry);
-  if (id === 869 || id === 201 || id === 493 || id === 773) {
+  if (id === 25 || id === 869 || id === 201 || id === 493 || id === 666 || id === 773) {
     openSpecialFormPicker(entry, event);
     return;
   }
-  const forms = getAvailableForms(entry);
+  const forms = getCycleForms(getAvailableForms(entry));
   if (forms.length <= 1) return;
   const selectedSuffix = formSelections[entryKey] || '';
   const currentIndex = forms.findIndex(form => form.suffix === selectedSuffix);
@@ -8598,45 +9543,6 @@ changeDexMode(selectedDex);
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
