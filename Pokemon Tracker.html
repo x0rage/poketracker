@@ -274,8 +274,8 @@
     z-index: 1;
   }
   .search-input::placeholder {
-    font-family: 'Gilroy Regular', 'Gilroy', 'Nunito', sans-serif !important;
-    font-weight: 400 !important;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif !important;
+    font-weight: 900 !important;
     color: color-mix(in srgb, var(--nav-box-text) 52%, transparent);
   }
   .search-input:focus::placeholder {
@@ -783,49 +783,65 @@
     pointer-events: none;
   }
   .wtp-modal {
-    width: min(440px, calc(100vw - 28px));
-    padding: 14px 18px 8px;
+    width: min(528px, calc(100vw - 28px));
+    padding: 17px 22px 10px;
   }
   .wtp-title-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    font-size: 1.28rem;
+    line-height: 1;
+  }
+  .wtp-title-text {
+    white-space: nowrap;
   }
   .wtp-streak {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 34px;
-    height: 28px;
-    padding: 0 9px;
+    gap: 6px;
+    min-width: 41px;
+    height: 34px;
+    padding: 0 11px;
     border-radius: 999px;
     background: linear-gradient(135deg, #ffb000, #ff6a00 62%, #e62829);
     color: #fff;
-    font-size: 0.86rem;
+    font-size: 1.03rem;
     font-weight: 950;
+    line-height: 1;
+    white-space: nowrap;
     box-shadow: 0 0 18px rgba(255, 128, 0, 0.36);
+  }
+  .wtp-streak-emoji,
+  .wtp-streak-count {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
   }
   .wtp-game {
     display: grid;
     justify-items: center;
-    gap: 4px;
+    gap: 5px;
     color: var(--nav-box-text);
   }
   .wtp-mode-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
-    gap: 10px;
+    gap: 12px;
   }
   .wtp-mode-btn,
   .wtp-submit-btn {
-    height: 38px;
+    height: 46px;
     border: 1px solid rgba(255,255,255,0.16);
-    border-radius: 10px;
+    border-radius: 12px;
     background: rgba(255,255,255,0.05);
     color: var(--nav-box-text);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.86rem;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 1.03rem;
     font-weight: 850;
     cursor: pointer;
   }
@@ -833,17 +849,17 @@
     box-shadow: 0 0 0 2px rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.16);
   }
   .wtp-sprite-stage {
-    width: 220px;
-    height: 220px;
+    width: 264px;
+    height: 264px;
     display: grid;
     place-items: center;
-    margin: -4px 0 -6px;
+    margin: -5px 0 -7px;
   }
   .wtp-sprite {
-    width: 210px;
-    height: 189px;
-    max-width: 210px;
-    max-height: 189px;
+    width: 272px;
+    height: 245px;
+    max-width: 272px;
+    max-height: 245px;
     object-fit: contain;
     image-rendering: auto;
     filter: brightness(0) contrast(1.15) drop-shadow(0 10px 18px rgba(0,0,0,0.55));
@@ -854,8 +870,8 @@
     transform: scale(1.03);
   }
   .wtp-result {
-    min-height: 18px;
-    font-size: 0.9rem;
+    min-height: 22px;
+    font-size: 1.08rem;
     font-weight: 850;
     text-align: center;
   }
@@ -867,21 +883,21 @@
   }
   .wtp-guess-row {
     display: grid;
-    grid-template-columns: 1fr 112px;
+    grid-template-columns: 1fr 134px;
     width: 100%;
-    gap: 8px;
+    gap: 10px;
     margin-top: -2px;
   }
   .wtp-guess-input {
-    height: 38px;
+    height: 46px;
     border: 1px solid rgba(255,255,255,0.16);
-    border-radius: 10px;
+    border-radius: 12px;
     background: rgba(0,0,0,0.18);
     color: var(--nav-box-text);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.9rem;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    font-size: 1.08rem;
     font-weight: 800;
-    padding: 0 12px;
+    padding: 0 14px;
     outline: none;
   }
   .wtp-guess-input::placeholder {
@@ -1230,6 +1246,50 @@
   }
   .special-form-grid.arceus-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .ability-effect-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: transparent;
+    z-index: 190;
+  }
+  .ability-effect-overlay.open {
+    display: flex;
+  }
+  .ability-effect-panel {
+    width: min(910px, calc(100vw - 48px));
+    max-width: 75ch;
+    padding: 29px 34px;
+    border-radius: 31px;
+    background: rgba(20,20,20,0.06);
+    backdrop-filter: blur(28px) saturate(125%);
+    -webkit-backdrop-filter: blur(28px) saturate(125%);
+    box-shadow: 0 16px 44px rgba(0,0,0,0.18);
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
+    pointer-events: none;
+  }
+  .ability-effect-title {
+    font-size: 1.48rem;
+    line-height: 1.08;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 13px;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.28);
+  }
+  .ability-effect-text {
+    font-size: 1.27rem;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    color: rgba(255,255,255,0.98);
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    white-space: normal;
   }
   .special-form-card {
     background: var(--uncaught-card-bg);
@@ -1646,7 +1706,7 @@
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    pointer-events: none;
+    pointer-events: auto;
   }
   .card-back-panel {
     width: 100%;
@@ -1753,6 +1813,11 @@
     text-align: center;
     width: 100%;
   }
+  .card-back-ability-item {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
   .card-back-ability-empty {
     justify-content: center;
     text-align: center;
@@ -1796,6 +1861,9 @@
     letter-spacing: 0em;
     text-transform: uppercase;
     text-align: center;
+  }
+  .card-back-ability-item:focus-visible {
+    outline: none;
   }
   @media (max-width: 2000px) {
     .card-back-panel {
@@ -2544,8 +2612,8 @@
     height: 66px;
     flex-direction: column;
     gap: 4px;
-    font-family: 'Nunito', sans-serif !important;
-    font-weight: 700;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif !important;
+    font-weight: 900;
     text-transform: uppercase;
   }
   .filter-picker-modal .type-filter-panel .type-filter-option img {
@@ -2555,9 +2623,9 @@
   .type-filter-name {
     display: block;
     max-width: 100%;
-    font-family: 'Nunito', sans-serif !important;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif !important;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 900;
     line-height: 1;
     color: currentColor;
     text-align: center;
@@ -2722,14 +2790,15 @@
   .settings-panel *,
   .wtp-modal,
   .wtp-modal * {
-    font-family: 'Nunito', sans-serif !important;
-    font-weight: 700 !important;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
   }
   .filter-picker-modal .type-filter-panel .type-filter-option,
   .filter-picker-modal .type-filter-panel .type-filter-option *,
   .filter-picker-modal .type-filter-panel .type-filter-option .type-filter-name {
-    font-family: 'Nunito', sans-serif !important;
-    font-weight: 700 !important;
+    font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif !important;
+    font-weight: 900 !important;
     text-transform: uppercase;
   }
 
@@ -2916,7 +2985,7 @@
 <div class="dex-picker-overlay blank-popup-overlay" id="blank-popup-overlay">
   <div class="dex-picker-modal blank-popup-modal wtp-modal">
     <div class="dex-picker-header">
-      <div class="dex-picker-title wtp-title-wrap">Who's That Pokemon <span class="wtp-streak" id="wtp-streak">🔥 0</span></div>
+      <div class="dex-picker-title wtp-title-wrap"><span class="wtp-title-text">Who's That Pokemon</span><span class="wtp-streak" id="wtp-streak"><span class="wtp-streak-emoji">🔥</span><span class="wtp-streak-count" id="wtp-streak-count">0</span></span></div>
       <button class="dex-picker-close blank-popup-close" type="button">Close</button>
     </div>
     <div class="wtp-game">
@@ -7303,7 +7372,10 @@ function saveWtpStreak(value, mode = wtpMode) {
 
 function updateWtpUi() {
   const streak = document.getElementById('wtp-streak');
-  if (streak) streak.textContent = `🔥 ${getWtpStreak()}`;
+  const streakCount = document.getElementById('wtp-streak-count');
+  if (streak) streak.setAttribute('aria-label', `Streak ${getWtpStreak()}`);
+  if (streakCount) streakCount.textContent = String(getWtpStreak());
+  else if (streak) streak.textContent = `🔥 ${getWtpStreak()}`;
   const regularBtn = document.getElementById('wtp-regular-btn');
   const hardBtn = document.getElementById('wtp-hard-btn');
   if (regularBtn) regularBtn.classList.toggle('active', wtpMode === 'regular');
@@ -8040,6 +8112,7 @@ const POKEAPI_FORM_SLUG_OVERRIDES = {
   '892:gigantamax-rapid-strike': 'urshifu-rapid-strike'
 };
 const BASE_PROFILE_FALLBACK_IDS = new Set([25, 201, 351, 412, 421, 422, 423, 585, 586, 666, 676, 741, 778, 845, 849, 869, 877, 893, 925, 931]);
+const FORCE_BASE_PROFILE_IDS = new Set([493, 773]);
 const BASE_PROFILE_FALLBACK_SUFFIXES = new Set([
   'gigantamax',
   'original-cap',
@@ -8086,6 +8159,10 @@ const pokemonProfileFormRequests = {};
 const pokemonProfileSlugRequests = {};
 let pokemonProfileCacheSaveTimer = null;
 const unresolvedPokemonProfileForms = new Set();
+const ABILITY_EFFECT_API_BASE_URL = 'https://pokeapi.co/api/v2/ability/';
+const abilityEffectCache = {};
+const abilityEffectRequests = {};
+let activeAbilityEffectRequestToken = 0;
 
 function escapeHtml(text) {
   return String(text == null ? '' : text)
@@ -8094,6 +8171,14 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function normalizeAbilityEffectText(text) {
+  return String(text || '')
+    .replace(/\f/g, ' ')
+    .replace(/\n+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function sanitizePokeApiSlug(text) {
@@ -8175,6 +8260,7 @@ function pushUniqueStrings(target, values) {
 }
 
 function getPokemonProfileFormKey(entry, formInfo) {
+  if (entry && FORCE_BASE_PROFILE_IDS.has(Number(entry.id))) return 'base';
   const suffix = String(formInfo && formInfo.suffix || '');
   return suffix || entry.splitFamily || BASE_FORM_SUFFIX_BY_ID[entry.id] || 'base';
 }
@@ -8247,6 +8333,98 @@ function getPokemonProfileSlugCandidates(entry, formInfo) {
     }
   }
   return slugs.filter(Boolean);
+}
+
+function getAbilityEffectSlug(abilityName) {
+  return sanitizePokeApiSlug(abilityName);
+}
+
+function extractEnglishAbilityEffect(data) {
+  const entries = Array.isArray(data && data.effect_entries) ? data.effect_entries : [];
+  const englishEntry = entries.find(entry => entry && entry.language && entry.language.name === 'en' && entry.effect)
+    || entries.find(entry => entry && entry.language && entry.language.name === 'en' && entry.short_effect);
+  return normalizeAbilityEffectText(englishEntry ? (englishEntry.effect || englishEntry.short_effect || '') : '');
+}
+
+async function fetchAbilityEffect(slug) {
+  if (!slug) return { status: 'missing' };
+  if (abilityEffectCache[slug]) return abilityEffectCache[slug];
+  if (abilityEffectRequests[slug]) return abilityEffectRequests[slug];
+
+  abilityEffectRequests[slug] = fetch(`${ABILITY_EFFECT_API_BASE_URL}${slug}`)
+    .then(response => {
+      if (!response.ok) {
+        abilityEffectCache[slug] = { status: 'missing' };
+        return abilityEffectCache[slug];
+      }
+      return response.json().then(data => {
+        const effect = extractEnglishAbilityEffect(data);
+        abilityEffectCache[slug] = effect
+          ? { status: 'ready', effect, name: formatPokemonProfileName(data && data.name ? data.name : slug) }
+          : { status: 'missing' };
+        return abilityEffectCache[slug];
+      });
+    })
+    .catch(() => {
+      abilityEffectCache[slug] = { status: 'missing' };
+      return abilityEffectCache[slug];
+    })
+    .finally(() => {
+      delete abilityEffectRequests[slug];
+    });
+
+  return abilityEffectRequests[slug];
+}
+
+function ensureAbilityEffectOverlay() {
+  let overlay = document.getElementById('ability-effect-overlay');
+  if (overlay) return overlay;
+
+  overlay = document.createElement('div');
+  overlay.id = 'ability-effect-overlay';
+  overlay.className = 'ability-effect-overlay';
+  overlay.innerHTML = `
+    <div class="ability-effect-panel" role="dialog" aria-modal="true" aria-live="polite">
+      <div class="ability-effect-title" id="ability-effect-title"></div>
+      <div class="ability-effect-text" id="ability-effect-text"></div>
+    </div>
+  `;
+  overlay.addEventListener('click', closeAbilityEffectOverlay);
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function setAbilityEffectOverlayContent(name, text) {
+  const overlay = ensureAbilityEffectOverlay();
+  const title = overlay.querySelector('#ability-effect-title');
+  const description = overlay.querySelector('#ability-effect-text');
+  if (title) title.textContent = String(name || '').toUpperCase();
+  if (description) description.textContent = String(text || '');
+}
+
+function closeAbilityEffectOverlay() {
+  const overlay = document.getElementById('ability-effect-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  delete overlay.dataset.requestToken;
+}
+
+async function openAbilityEffectOverlay(abilityName, abilitySlug, event) {
+  if (event) event.stopPropagation();
+  const overlay = ensureAbilityEffectOverlay();
+  const requestToken = String(++activeAbilityEffectRequestToken);
+  overlay.dataset.requestToken = requestToken;
+  setAbilityEffectOverlayContent(abilityName, 'Loading ability description...');
+  overlay.classList.add('open');
+
+  const result = await fetchAbilityEffect(abilitySlug);
+  if (!overlay.classList.contains('open') || overlay.dataset.requestToken !== requestToken) return;
+
+  if (result && result.status === 'ready') {
+    setAbilityEffectOverlayContent(result.name || abilityName, result.effect);
+    return;
+  }
+  setAbilityEffectOverlayContent(abilityName, 'Description unavailable.');
 }
 
 function getCardBackProfileState(entry, formInfo) {
@@ -8388,9 +8566,9 @@ function renderCardBackAbilities(profile) {
     return `<div class="card-back-ability-empty">ABILITIES UNKNOWN</div>`;
   }
   return abilities.map(ability => `
-    <div class="card-back-ability-item${ability.hidden ? ' is-hidden' : ''}">
+    <button class="card-back-ability-item${ability.hidden ? ' is-hidden' : ''}" type="button" data-ability-name="${escapeHtml(ability.name || 'Unknown Ability')}" data-ability-slug="${escapeHtml(getAbilityEffectSlug(ability.name || ''))}" title="Show ability description" aria-label="Show ability description for ${escapeHtml(ability.name || 'Unknown Ability')}">
       <span class="card-back-ability-name">${escapeHtml((ability.name || 'Unknown Ability').toUpperCase())}</span>
-    </div>
+    </button>
   `).join('');
 }
 
@@ -8953,6 +9131,15 @@ function wireCardEvents(card, entry, selectedSuffix) {
     }
     if (clickTarget.closest('.poke-rank') || clickTarget.closest('.card-back-arrow')) {
       toggleCardFlip(entry, event);
+      return;
+    }
+    const abilityTrigger = clickTarget.closest('.card-back-ability-item[data-ability-slug]');
+    if (abilityTrigger) {
+      openAbilityEffectOverlay(
+        abilityTrigger.getAttribute('data-ability-name') || abilityTrigger.textContent || 'Unknown Ability',
+        abilityTrigger.getAttribute('data-ability-slug') || '',
+        event
+      );
       return;
     }
     if (flippedCardSelections[entryKey]) return;
@@ -9543,21 +9730,6 @@ changeDexMode(selectedDex);
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
