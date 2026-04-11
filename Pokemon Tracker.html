@@ -1754,13 +1754,13 @@
   .card-back-radar-label {
     fill: currentColor;
     font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
-    font-size: 15px;
+    font-size: 18px;
     letter-spacing: 0.04em;
   }
   .card-back-radar-value {
     fill: currentColor;
     font-family: 'Gilroy Bold', 'Gilroy', 'Nunito', sans-serif;
-    font-size: 17px;
+    font-size: 20px;
   }
   .card-back-section-title {
     padding: 4px 6px 0;
@@ -1856,7 +1856,7 @@
     min-width: 0;
     flex: 0 1 auto;
     font-family: 'Gilroy Heavy', 'Gilroy', 'Nunito', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     line-height: 1;
     letter-spacing: 0em;
     text-transform: uppercase;
@@ -1869,6 +1869,7 @@
     .card-back-panel {
       padding: 6px 2px 3px;
       gap: 2px;
+      margin-top: 6px;
     }
     .card-back-chart {
       flex: 0 0 56%;
@@ -1881,10 +1882,10 @@
       margin-top: 0;
     }
     .card-back-radar-label {
-      font-size: 13px;
+      font-size: 17px;
     }
     .card-back-radar-value {
-      font-size: 15px;
+      font-size: 19px;
     }
     .card-back-section-title {
       padding: 15px 6px 0;
@@ -1900,8 +1901,8 @@
       padding: 0 6px;
     }
     .card-back-ability-name {
-      font-size: 0.7rem;
-      line-height: 1;
+      font-size: 0.85rem;
+      line-height: 0.8;
     }
     .card-back-ability-slot {
       min-width: 20px;
@@ -2517,17 +2518,17 @@
       min-height: 18px;
     }
     .card.ui-minimalist .poke-name {
-      font-size: 0.72rem;
+      font-size: 0.77rem;
       max-width: calc(100% - 48px);
     }
     .card.ui-minimalist .poke-name.tight-name {
-      font-size: 0.67rem;
+      font-size: 0.71rem;
     }
     .card.ui-minimalist .poke-name.ultra-tight-name {
-      font-size: 0.61rem;
+      font-size: 0.65rem;
     }
     .card.ui-minimalist .poke-name.mega-tight-name {
-      font-size: 0.56rem;
+      font-size: 0.59rem;
     }
     .card.ui-minimalist .type-badge {
       width: 22px;
@@ -2805,6 +2806,11 @@
 
   @media (min-width: 1860px) and (max-width: 1950px) {
     :root { --page-side-pad: 24px; }
+    #instance-actions {
+      width: 89px !important;
+      min-width: 89px !important;
+      max-width: 89px !important;
+    }
     .grid {
       grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
       gap: 8px;
@@ -2858,18 +2864,18 @@
       min-height: 20px;
     }
     .poke-name {
-      font-size: 0.69rem;
+      font-size: 0.74rem;
       max-width: calc(100% - 44px);
     }
     .poke-name.tight-name {
-      font-size: 0.64rem;
+      font-size: 0.68rem;
     }
     .poke-name.ultra-tight-name {
-      font-size: 0.56rem;
+      font-size: 0.6rem;
       max-width: calc(100% - 38px);
     }
     .poke-name.mega-tight-name {
-      font-size: 0.5rem;
+      font-size: 0.54rem;
       max-width: calc(100% - 36px);
     }
     .type-badge {
@@ -2974,7 +2980,7 @@
   <div class="controls-right">
     <button class="dex-select dex-popup-trigger" id="dex-trigger" type="button">National Dex</button>
     <button class="dex-select instance-select instance-popup-trigger" id="instance-trigger" type="button">Default</button>
-    <select class="dex-select instance-actions-select" id="instance-actions" onchange="handleInstanceAction(this.value)" style="width:89px;min-width:89px;max-width:89px;padding-right:22px;">
+    <select class="dex-select instance-actions-select" id="instance-actions" onchange="handleInstanceAction(this.value)" style="width:99px;min-width:99px;max-width:99px;padding-right:22px;">
       <option value="" selected disabled hidden>Actions</option>
       <option value="import-favorites">Import Favorites</option>
       <option value="select-all">Select All</option>
@@ -9753,10 +9759,6 @@ changeDexMode(selectedDex);
 </script>
 </body>
 </html>
-
-
-
-
 
 
 
