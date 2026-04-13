@@ -8291,6 +8291,14 @@ function pushUniqueStrings(target, values) {
 function getPokemonProfileFormKey(entry, formInfo) {
   if (entry && FORCE_BASE_PROFILE_IDS.has(Number(entry.id))) return 'base';
   const suffix = String(formInfo && formInfo.suffix || '');
+  if (isFemaleForm(formInfo)) {
+    const normalizedSuffix = suffix.toLowerCase();
+    if (!normalizedSuffix || normalizedSuffix === 'f' || normalizedSuffix === 'female') {
+      return entry.splitFamily || BASE_FORM_SUFFIX_BY_ID[entry.id] || 'base';
+    }
+    const nonFemaleSuffix = normalizedSuffix.replace(/(?:-female|-f)$/, '');
+    return nonFemaleSuffix || entry.splitFamily || BASE_FORM_SUFFIX_BY_ID[entry.id] || 'base';
+  }
   return suffix || entry.splitFamily || BASE_FORM_SUFFIX_BY_ID[entry.id] || 'base';
 }
 
@@ -9128,7 +9136,8 @@ function getVisiblePokemonList() {
     const typeInfo = formInfo.types && formInfo.types.length ? formInfo.types : (TYPES_BY_ID[p.id] || []);
     if (!matchesSelectedTypes(typeInfo)) return false;
     const numberText = (p.dexNumberLabel || String(p.id)).toLowerCase();
-    if (q && !p.name.toLowerCase().includes(q) && !numberText.includes(q) && !(favoriteRank && String(favoriteRank).includes(q))) return false;
+    const displayNameText = getDisplayName(p).toLowerCase();
+    if (q && !p.name.toLowerCase().includes(q) && !displayNameText.includes(q) && !numberText.includes(q) && !(favoriteRank && String(favoriteRank).includes(q))) return false;
     const catchState = getCatchState(p.id, formInfo.suffix, p);
     if (filter === 'caught' && !catchState.isFull) return false;
     if (filter === 'uncaught' && catchState.isFull) return false;
@@ -9759,8 +9768,6 @@ changeDexMode(selectedDex);
 </script>
 </body>
 </html>
-
-
 
 
 
